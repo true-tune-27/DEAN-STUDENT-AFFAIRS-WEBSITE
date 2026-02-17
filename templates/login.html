@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Aditya University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next') || '/';
+    </script>
+    <style>
+        /* Matches the index.html theme exactly */
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* Blue Overlay + Background Image */
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(0, 51, 102, 0.92) 100%), url('/images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-white">
+    
+    <div class="w-full max-w-md bg-white/95 backdrop-blur-sm text-gray-800 rounded-xl shadow-2xl overflow-hidden border border-white/20">
+        <div class="p-8">
+            <div class="text-center mb-8">
+                <img src="/images/logo.png" class="h-20 mx-auto mb-4 object-contain" onerror="this.src='/images/Aditya.png'; this.onerror=null;"> 
+                <h1 class="text-2xl font-bold text-blue-900">Welcome Back</h1>
+                <p class="text-gray-500 text-sm mt-1">Sign in to access the dashboard</p>
+            </div>
+
+            <div class="flex bg-gray-100 p-1 rounded-lg mb-6">
+                <button onclick="setRole('dean')" id="btn-dean" class="flex-1 py-2 text-sm font-bold rounded-md bg-blue-900 text-white shadow-md transition-all">Dean</button>
+                <button onclick="setRole('coordinator')" id="btn-coord" class="flex-1 py-2 text-sm font-bold rounded-md text-gray-500 hover:bg-gray-200 transition-all">Coordinator</button>
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1 ml-1" id="user-label">Email ID</label>
+                    <input type="text" id="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-900 focus:border-blue-900 outline-none transition" placeholder="dean@aditya.ac.in">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1 ml-1">Password</label>
+                    <input type="password" id="password" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-900 focus:border-blue-900 outline-none transition" placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+                    Sign In <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+                
+                <p id="error" class="text-red-500 text-xs text-center mt-2 hidden font-semibold"></p>
+            </form>
+        </div>
+        <div class="bg-gray-50 p-4 text-center text-xs text-gray-400 border-t border-gray-100">
+            &copy; 2026 Aditya University Secure Login System
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        let role = 'dean';
+        function setRole(r) {
+            role = r;
+            const btnDean = document.getElementById('btn-dean');
+            const btnCoord = document.getElementById('btn-coord');
+            const emailInput = document.getElementById('email');
+            const userLabel = document.getElementById('user-label');
+
+            // Reset Classes
+            const activeClass = "flex-1 py-2 text-sm font-bold rounded-md bg-blue-900 text-white shadow-md transition-all";
+            const inactiveClass = "flex-1 py-2 text-sm font-bold rounded-md text-gray-500 hover:bg-gray-200 transition-all";
+
+            if(r === 'dean') {
+                btnDean.className = activeClass;
+                btnCoord.className = inactiveClass;
+                emailInput.placeholder = 'dean@aditya.ac.in';
+                userLabel.innerText = 'Email ID';
+            } else {
+                btnCoord.className = activeClass.replace('bg-blue-900', 'bg-green-700'); // Green for coordinators
+                btnDean.className = inactiveClass;
+                emailInput.placeholder = 'e.g. neelima'; 
+                userLabel.innerText = 'User ID';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const btn = document.querySelector('button[type="submit"]');
+            const oldText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ role, email, password, next: nextUrl })
+                });
+                const data = await res.json();
+                
+                if(data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    const err = document.getElementById('error');
+                    err.innerText = data.message;
+                    err.classList.remove('hidden');
+                    // Shake animation for error
+                    const card = document.querySelector('.max-w-md');
+                    card.classList.add('animate-[bounce_0.5s_ease-in-out]');
+                    setTimeout(() => card.classList.remove('animate-[bounce_0.5s_ease-in-out]'), 500);
+                    
+                    btn.innerHTML = oldText;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            } catch (error) {
+                console.error(error);
+                btn.innerHTML = oldText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

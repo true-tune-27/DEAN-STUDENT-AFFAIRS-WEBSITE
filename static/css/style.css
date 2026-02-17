@@ -1,0 +1,61 @@
+/* public/style.css */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+
+body { background-color: #f4f4f4; color: #333; }
+
+/* Top Bar - Dark Grey */
+.top-bar { background-color: #333; color: white; padding: 8px 0; font-size: 12px; }
+.top-bar .container { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.top-links a { color: #ccc; text-decoration: none; margin-left: 15px; }
+.top-links a:hover { color: #fff; }
+
+/* Navbar - White with Shadow */
+.navbar { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; height: 70px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.logo h1 { font-size: 24px; color: #003366; /* Deep Blue like VIT/Aditya */ }
+.logo span { color: #d32f2f; /* Red Accent */ }
+.nav-links { list-style: none; display: flex; }
+.nav-links li { margin-left: 25px; }
+.nav-links a { text-decoration: none; color: #333; font-weight: 500; font-size: 14px; text-transform: uppercase; }
+.nav-links a:hover, .nav-links a.active { color: #d32f2f; }
+
+/* Hero Section */
+.hero-section { background: linear-gradient(135deg, #003366 0%, #005a9c 100%); color: white; padding: 40px 0; text-align: center; }
+
+/* Layout */
+.dashboard-container { display: flex; max-width: 1200px; margin: 30px auto; gap: 30px; padding: 0 20px; }
+
+/* Sidebar */
+.sidebar { width: 250px; flex-shrink: 0; }
+.profile-card { background: white; padding: 20px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+.profile-img { width: 80px; height: 80px; background-color: #ddd; border-radius: 50%; margin: 0 auto 15px; }
+.side-menu { list-style: none; text-align: left; margin-top: 15px; }
+.side-menu li { border-bottom: 1px solid #eee; }
+.side-menu a { display: block; padding: 10px; text-decoration: none; color: #555; }
+.side-menu a:hover, .side-menu .active-link { background: #f9f9f9; color: #d32f2f; border-left: 3px solid #d32f2f; }
+
+/* Main Content */
+.content-area { flex-grow: 1; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.section-header h3 { color: #003366; border-left: 4px solid #d32f2f; padding-left: 10px; }
+
+/* Grid */
+.clubs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+/* Cards */
+.club-card { background: white; border-radius: 4px; border-top: 3px solid #003366; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.2s; }
+.club-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.card-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: start; }
+.card-header h4 { font-size: 16px; color: #333; }
+.card-body { padding: 15px; font-size: 13px; color: #666; }
+.card-footer { padding: 10px 15px; background: #f9f9f9; text-align: right; }
+.card-footer button { background: none; border: 1px solid #003366; color: #003366; padding: 5px 10px; cursor: pointer; font-size: 12px; border-radius: 3px; }
+.card-footer button:hover { background: #003366; color: white; }
+
+/* Status Badges */
+.status { font-size: 10px; padding: 2px 6px; border-radius: 3px; }
+.status.active { background: #e8f5e9; color: #2e7d32; }
+.status.pending { background: #fff3e0; color: #ef6c00; }
+
+/* Footer */
+footer { background: #222; color: #888; text-align: center; padding: 20px 0; margin-top: 50px; font-size: 13px; }

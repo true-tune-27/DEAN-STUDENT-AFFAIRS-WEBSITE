@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ club.name }} Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* Glassmorphism & Base Styles */
+        body { font-family: 'Inter', sans-serif; background: url('/images/{{ club.img }}') no-repeat center center fixed; background-size: cover; color: #333; }
+        body::before { content: ''; position: absolute; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: -1; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        /* Sidebar Glass */
+        .glass-sidebar { background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Content Glass */
+        .glass-content { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+        /* Tree View Animation */
+        .tree-content { display: none; margin-left: 10px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 8px; }
+        .tree-group.open > .tree-content { display: block; animation: fadeIn 0.3s ease; }
+        .tree-group.open > div > .rotate-icon { transform: rotate(90deg); }
+        .rotate-icon { transition: transform 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Dropdown */
+        .dropdown-menu { display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); z-index: 50; width: 220px; max-height: 300px; overflow-y: auto; padding: 8px; }
+        .dropdown-menu.active { display: block; }
+    </style>
+</head>
+<body class="h-screen flex text-sm overflow-hidden text-white">
+
+    <input type="hidden" id="clubId" value="{{ club_id }}">
+
+    <aside class="w-80 glass-sidebar flex flex-col z-20 shrink-0">
+        <div class="p-6 border-b border-white/10 flex items-center gap-4">
+            <div class="h-12 w-12 rounded-full border-2 border-blue-400 overflow-hidden shrink-0">
+                <img src="/images/{{ club.img }}" class="h-full w-full object-cover">
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-blue-50 leading-tight">{{ club.name }}</h1>
+                <p class="text-[10px] text-blue-300 uppercase tracking-wide">Head: {{ club.head }}</p>
+            </div>
+        </div>
+
+        <div class="px-5 pt-4">
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                <input type="text" id="searchEvent" placeholder="Search events..." 
+                    class="w-full bg-black/20 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 placeholder-gray-500 transition">
+            </div>
+        </div>
+
+        <div class="p-5 border-b border-white/10">
+            <div class="space-y-2 mb-3">
+                <input type="text" id="eventName" placeholder="New Event Name" class="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-white focus:border-blue-400 outline-none">
+                <input type="date" id="eventDate" class="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-white focus:border-blue-400 outline-none">
+                <input type="text" id="teamHead" value="{{ club.head }}" readonly class="w-full bg-white/5 border border-white/5 rounded px-3 py-2 text-xs text-gray-500 cursor-not-allowed">
+            </div>
+            <label class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg w-full flex items-center justify-center text-xs font-bold transition shadow-lg group">
+                <i class="fas fa-cloud-upload-alt mr-2 group-hover:animate-bounce"></i> Upload Log
+                <input type="file" id="fileInput" class="hidden" accept=".xlsx, .xls">
+            </label>
+            <p id="uploadStatus" class="text-[10px] mt-2 text-center text-gray-400 h-4"></p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-1" id="fileTree">
+            </div>
+        
+        <div class="p-4 border-t border-white/10 flex gap-2">
+            <a href="/logout" class="flex-1 py-2 text-center bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs rounded border border-red-500/20 transition">Logout</a>
+            {% if user_role == 'dean' %}
+            <a href="/home" class="flex-1 py-2 text-center bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-xs rounded border border-blue-500/20 transition">Back to Grid</a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <main class="flex-1 p-6 relative flex flex-col min-w-0">
+        
+        <div class="glass-content flex flex-col h-full overflow-hidden relative">
+            
+            <header class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-gray-50/80 rounded-t-xl shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 truncate" id="currentFileName">Select an Event</h2>
+                    <p class="text-xs text-gray-500" id="recordCount">No data loaded</p>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <button onclick="toggleDropdown('colDropdown')" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 shadow-sm transition">
+                            <i class="fas fa-columns"></i> Columns
+                        </button>
+                        <div id="colDropdown" class="dropdown-menu">
+                            <div class="text-[10px] font-bold text-gray-400 uppercase mb-2 pb-1 border-b">Toggle Columns</div>
+                            <div id="columnList" class="space-y-1"></div>
+                        </div>
+                    </div>
+
+                    <button onclick="downloadFilteredData()" id="downloadBtn" class="bg-green-600 hover:bg-green-500 text-white px-4 py-1.5 rounded-md text-xs font-bold shadow-md flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-file-excel"></i> Export Filtered
+                    </button>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-auto p-0 relative bg-white" id="mainContainer">
+                
+                <div id="loader" class="hidden absolute inset-0 bg-white/80 z-50 flex flex-col items-center justify-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p class="text-xs text-blue-600 mt-2 font-semibold">Loading Data...</p>
+                </div>
+
+                <div id="placeholder" class="h-full flex flex-col items-center justify-center text-gray-400">
+                    <i class="fas fa-table text-4xl mb-3 opacity-20"></i>
+                    <p class="text-sm">Select an event from the sidebar to view logs.</p>
+                </div>
+
+                <div id="tableWrapper" class="hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100 sticky top-0 z-10" id="headerRow"></thead>
+                        <tbody class="divide-y divide-gray-100 text-gray-700" id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const CLUB_ID = document.getElementById('clubId').value;
+        let allFiles = []; // Store for search
+        let currentData = [];
+        let allColumns = [];
+        let visibleColumns = [];
+        let currentFileId = null;
+
+        // --- 1. INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFileList();
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.relative')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.remove('active'));
+                }
+            });
+
+            // Search Listener
+            document.getElementById('searchEvent').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allFiles.filter(f => 
+                    (f.event_name && f.event_name.toLowerCase().includes(term)) || 
+                    (f.filename && f.filename.toLowerCase().includes(term))
+                );
+                renderFileTree(filtered, term.length > 0); // Expand all if searching
+            });
+        });
+
+        // --- 2. FILE TREE & SIDEBAR ---
+        async function loadFileList() {
+            try {
+                const res = await fetch(`/api/files?club_id=${CLUB_ID}`);
+                allFiles = await res.json();
+                renderFileTree(allFiles);
+            } catch (err) { console.error("Load Error", err); }
+        }
+
+        function renderFileTree(files, expandAll = false) {
+            const container = document.getElementById('fileTree');
+            container.innerHTML = '';
+
+            if (files.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 text-xs text-center p-4">No events found</div>';
+                return;
+            }
+
+            // Group by Year -> Month
+            const grouped = {};
+            files.forEach(file => {
+                let d = new Date(file.event_date || file.upload_date);
+                if (isNaN(d)) d = new Date();
+                const y = d.getFullYear();
+                const m = d.toLocaleString('default', { month: 'long' });
+                if (!grouped[y]) grouped[y] = {};
+                if (!grouped[y][m]) grouped[y][m] = [];
+                grouped[y][m].push(file);
+            });
+
+            // Build HTML
+            Object.keys(grouped).sort((a,b) => b-a).forEach((year, i) => {
+                const yearDiv = document.createElement('div');
+                const isOpenYear = expandAll || i === 0;
+                yearDiv.className = isOpenYear ? "tree-group open mb-1" : "tree-group mb-1";
+
+                const yearHeader = document.createElement('div');
+                yearHeader.className = "flex items-center p-2 rounded hover:bg-white/5 cursor-pointer text-gray-300 hover:text-white font-bold transition";
+                yearHeader.innerHTML = `<i class="fas fa-chevron-right text-[10px] w-4 rotate-icon"></i> <span>${year}</span>`;
+                yearHeader.onclick = () => yearDiv.classList.toggle('open');
+
+                const yearContent = document.createElement('div');
+                yearContent.className = "tree-content";
+
+                const months = Object.keys(grouped[year]).sort((a,b) => new Date(`${a} 1 2000`) - new Date(`${b} 1 2000`));
+                
+                months.forEach(month => {
+                    const monthDiv = document.createElement('div');
+                    monthDiv.className = expandAll ? "tree-group open" : "tree-group";
+
+                    const monthHeader = document.createElement('div');
+                    monthHeader.className = "flex items-center p-1.5 rounded hover:bg-white/5 cursor-pointer text-gray-400 hover:text-white text-xs uppercase tracking-wide";
+                    monthHeader.innerHTML = `<i class="fas fa-chevron-right text-[8px] w-4 rotate-icon"></i> <span>${month}</span>`;
+                    monthHeader.onclick = (e) => { e.stopPropagation(); monthDiv.classList.toggle('open'); };
+
+                    const monthContent = document.createElement('div');
+                    monthContent.className = "tree-content";
+
+                    grouped[year][month].forEach(file => {
+                        // Date Badge Logic
+                        let dateBadge = '';
+                        if (file.event_date) {
+                            const dObj = new Date(file.event_date);
+                            const day = dObj.getDate();
+                            const mon = dObj.toLocaleString('default', { month: 'short' });
+                            dateBadge = `<span class="bg-blue-500/20 text-blue-300 px-1.5 rounded text-[9px] font-mono mr-2">${mon} ${day}</span>`;
+                        }
+
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = "p-2 rounded hover:bg-white/10 cursor-pointer text-xs text-gray-300 flex items-center transition group";
+                        fileDiv.innerHTML = `${dateBadge}<span class="truncate group-hover:text-white">${file.event_name || file.filename}</span>`;
+                        fileDiv.onclick = () => loadData(file.file_id);
+                        monthContent.appendChild(fileDiv);
+                    });
+
+                    monthDiv.append(monthHeader, monthContent);
+                    yearContent.appendChild(monthDiv);
+                });
+
+                yearDiv.append(yearHeader, yearContent);
+                container.appendChild(yearDiv);
+            });
+        }
+
+        // --- 3. DATA LOADING & TABLE ---
+        async function loadData(fileId) {
+            const loader = document.getElementById('loader');
+            loader.classList.remove('hidden');
+            
+            try {
+                const res = await fetch(`/api/data/${fileId}`);
+                const result = await res.json();
+                
+                if (result.error) throw new Error(result.error);
+
+                currentData = result.data;
+                allColumns = result.columns;
+                visibleColumns = [...result.columns]; // Default: show all
+                currentFileId = fileId;
+
+                // Update UI Headers
+                document.getElementById('currentFileName').innerText = result.event_name || result.filename;
+                document.getElementById('recordCount').innerText = `${currentData.length} Records found`;
+                document.getElementById('placeholder').classList.add('hidden');
+                document.getElementById('tableWrapper').classList.remove('hidden');
+
+                renderColumnList();
+                renderTable();
+
+            } catch (err) {
+                alert("Error loading data: " + err.message);
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function renderTable() {
+            const thead = document.getElementById('headerRow');
+            const tbody = document.getElementById('tableBody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            // Header
+            visibleColumns.forEach(col => {
+                const th = document.createElement('th');
+                th.className = "px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200";
+                th.innerText = col;
+                thead.appendChild(th);
+            });
+
+            // Rows (Limit to 100 for performance preview)
+            currentData.slice(0, 100).forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = idx % 2 === 0 ? "bg-white hover:bg-blue-50" : "bg-gray-50 hover:bg-blue-50";
+                
+                visibleColumns.forEach(col => {
+                    const td = document.createElement('td');
+                    td.className = "px-6 py-3 whitespace-nowrap text-xs text-gray-600 border-b border-gray-100";
+                    td.innerText = row[col] || '-';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- 4. COLUMN SELECTOR ---
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('active');
+        }
+
+        function renderColumnList() {
+            const list = document.getElementById('columnList');
+            list.innerHTML = '';
+            allColumns.forEach(col => {
+                const label = document.createElement('label');
+                label.className = "flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer text-gray-700 text-xs";
+                const checked = visibleColumns.includes(col) ? 'checked' : '';
+                label.innerHTML = `<input type="checkbox" class="text-blue-600 rounded focus:ring-blue-500" value="${col}" ${checked} onchange="toggleColumn('${col}')"> ${col}`;
+                list.appendChild(label);
+            });
+        }
+
+        function toggleColumn(col) {
+            if (visibleColumns.includes(col)) {
+                visibleColumns = visibleColumns.filter(c => c !== col);
+            } else {
+                visibleColumns.push(col);
+                // maintain original order
+                visibleColumns.sort((a, b) => allColumns.indexOf(a) - allColumns.indexOf(b));
+            }
+            renderTable();
+        }
+
+        // --- 5. UPLOAD LOGIC ---
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            const eventName = document.getElementById('eventName').value.trim();
+            const eventDate = document.getElementById('eventDate').value;
+            const teamHead = document.getElementById('teamHead').value;
+
+            if (!file || !eventName || !eventDate) {
+                alert("Please fill in Event Name, Date, and select a file.");
+                e.target.value = '';
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('club_id', CLUB_ID);
+            fd.append('event_name', eventName);
+            fd.append('event_date', eventDate);
+            fd.append('team_head', teamHead);
+
+            const status = document.getElementById('uploadStatus');
+            status.innerText = "Encrypting & Uploading...";
+            status.className = "text-[10px] mt-2 text-center text-blue-400 animate-pulse";
+
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                if (res.ok) {
+                    status.innerText = "Upload Successful!";
+                    status.className = "text-[10px] mt-2 text-center text-green-400";
+                    loadFileList(); // Refresh tree
+                    // Clear inputs
+                    document.getElementById('eventName').value = '';
+                    document.getElementById('eventDate').value = '';
+                    e.target.value = '';
+                } else { throw new Error("Upload Failed"); }
+            } catch (err) {
+                status.innerText = "Error Uploading";
+                status.className = "text-[10px] mt-2 text-center text-red-400";
+            }
+        });
+
+        // --- 6. EXPORT LOGIC ---
+        async function downloadFilteredData() {
+            if (!currentFileId) return;
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generating...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // Send file ID AND Selected Columns
+                    body: JSON.stringify({ 
+                        file_id: currentFileId, 
+                        filters: {}, // Add row filters here if you implemented them
+                        selected_columns: visibleColumns 
+                    })
+                });
+
+                if (!res.ok) throw new Error("Export failed");
+                
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Filtered_Log.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

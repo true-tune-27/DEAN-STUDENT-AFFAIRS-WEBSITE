@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aditya University | Club Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;700&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CORE STYLES --- */
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            color: white;
+        }
+
+        /* 1. Background Image Layer */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            background: url('/images/background.png') no-repeat center center;
+            background-size: cover;
+            z-index: -2;
+        }
+
+        /* 2. Blue Overlay Layer (Ensures Blue covers everything completely) */
+        .bg-overlay {
+            position: absolute;
+            inset: 0;
+            /* Strong blue gradient that covers the whole image */
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(0, 51, 102, 0.92) 100%);
+            z-index: -1;
+        }
+
+        /* --- ANIMATIONS --- */
+        
+        /* Logo Animation: Starts invisible, pops in, stays visible */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            60% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); } /* Ends at Opacity 1 */
+        }
+
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(60px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes expandLine {
+            0% { width: 0; opacity: 0; }
+            50% { opacity: 1; }
+            100% { width: 140px; opacity: 1; }
+        }
+
+        /* Floating Particles */
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(15px, -30px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* --- CLASS ASSIGNMENTS --- */
+        
+        .anim-logo {
+            /* forwards ensures it stays at the 100% state (Visible) */
+            animation: popIn 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0; /* Start hidden */
+            animation-delay: 0.5s;
+        }
+
+        .anim-title {
+            animation: slideUpFade 1.5s ease-out forwards;
+            opacity: 0;
+            animation-delay: 1.0s;
+        }
+
+        .anim-line {
+            height: 4px;
+            background: #d32f2f;
+            margin: 25px auto;
+            border-radius: 2px;
+            opacity: 0;
+            animation: expandLine 1.5s ease-out forwards;
+            animation-delay: 1.8s;
+        }
+
+        .anim-desc {
+            animation: slideUpFade 1.5s ease-out forwards;
+            opacity: 0;
+            animation-delay: 2.5s;
+        }
+
+        .anim-btn {
+            animation: slideUpFade 1.5s ease-out forwards;
+            opacity: 0;
+            animation-delay: 3.2s;
+        }
+
+        /* Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0; /* Behind content, above overlay */
+            animation: float 15s infinite ease-in-out;
+        }
+        .orb-1 { width: 500px; height: 500px; background: rgba(59, 130, 246, 0.2); top: -10%; left: -10%; }
+        .orb-2 { width: 400px; height: 400px; background: rgba(220, 38, 38, 0.15); bottom: -10%; right: -5%; animation-delay: -5s; }
+        
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center">
+
+    <div class="bg-image"></div>   <div class="bg-overlay"></div> <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    
+    <div class="text-center z-10 px-4 relative">
+        
+        <div class="mb-8 anim-logo inline-block">
+            <div class="h-32 w-32 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-2xl mx-auto p-4">
+                <img src="/images/logo.png" alt="University Logo" class="h-full w-full object-contain drop-shadow-lg">
+            </div>
+        </div>
+
+        <h1 class="text-5xl md:text-8xl font-bold tracking-tight anim-title text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100">
+            ADITYA
+            <span class="block text-3xl md:text-5xl font-light mt-4 text-white tracking-wider">UNIVERSITY</span>
+        </h1>
+
+        <div class="anim-line w-0"></div>
+
+        <p class="text-lg md:text-2xl text-blue-100/90 font-light tracking-[0.2em] uppercase anim-desc">
+            Centralized Club Management System
+        </p>
+
+        <div class="mt-16 anim-btn">
+            <a href="/login" class="group relative px-10 py-4 bg-white text-blue-900 font-bold rounded-full overflow-hidden transition-all hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.2)] inline-flex items-center">
+                <span class="relative z-10 text-lg">Enter Portal <i class="fa-solid fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i></span>
+                <div class="absolute inset-0 bg-blue-100 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="absolute bottom-8 text-xs text-white/40 uppercase tracking-widest z-10">
+        &copy; 2026 Aditya University | Dean Student Affairs
+    </div>
+
+</body>
+</html>
