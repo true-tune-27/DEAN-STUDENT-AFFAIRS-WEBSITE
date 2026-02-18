@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +10,18 @@
 
     <style>
         /* --- RESET & BASICS --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background-color: #f0f2f5; color: #333; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
         :root {
             --primary: #003366;
             --accent: #d32f2f;
@@ -25,11 +35,12 @@
             display: flex;
             align-items: center;
             padding: 0 40px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
+
         .nav-content {
             width: 100%;
             max-width: 1400px;
@@ -38,9 +49,20 @@
             justify-content: space-between;
             align-items: center;
         }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; color: var(--primary); }
-        .logo span { color: var(--accent); }
-        
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
         .nav-links a {
             text-decoration: none;
             color: #333;
@@ -49,8 +71,14 @@
             font-size: 14px;
             transition: color 0.3s;
         }
-        .nav-links a:hover { color: var(--primary); }
-        .btn-logout { color: var(--accent) !important; }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn-logout {
+            color: var(--accent) !important;
+        }
 
         /* --- HERO SECTION --- */
         .hero {
@@ -60,8 +88,18 @@
             text-align: center;
             margin-bottom: 40px;
         }
-        .hero h1 { font-size: 32px; margin-bottom: 10px; }
-        .hero p { opacity: 0.8; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; }
+
+        .hero h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            opacity: 0.8;
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
 
         /* --- DASHBOARD GRID --- */
         .container {
@@ -77,15 +115,17 @@
             width: 300px;
             flex-shrink: 0;
         }
+
         .profile-card {
             background: white;
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
             text-align: center;
             position: sticky;
             top: 100px;
         }
+
         .avatar {
             width: 100px;
             height: 100px;
@@ -97,12 +137,14 @@
             border: 4px solid #f8fafc;
             box-shadow: 0 0 0 2px var(--primary);
         }
+
         .menu-list {
             margin-top: 30px;
             text-align: left;
             border-top: 1px solid #eee;
             padding-top: 20px;
         }
+
         .menu-item {
             display: flex;
             align-items: center;
@@ -115,12 +157,21 @@
             font-size: 14px;
             font-weight: 500;
         }
-        .menu-item.active { background: #eff6ff; color: var(--primary); }
-        .menu-item:hover { background: #f8fafc; }
+
+        .menu-item.active {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .menu-item:hover {
+            background: #f8fafc;
+        }
 
         /* Main Content */
-        .content { flex: 1; }
-        
+        .content {
+            flex: 1;
+        }
+
         .header-row {
             display: flex;
             justify-content: space-between;
@@ -129,10 +180,15 @@
             background: white;
             padding: 20px 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
             border-left: 5px solid var(--primary);
         }
-        .header-row h2 { font-size: 20px; color: var(--primary); }
+
+        .header-row h2 {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
         .badge {
             background: #e0f2fe;
             color: #0369a1;
@@ -155,43 +211,48 @@
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
         }
+
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
         }
 
         /* *** CRITICAL FIX FOR IMAGES *** */
         .card-img-box {
             width: 100%;
-            height: 180px; /* Fixed height forces uniformity */
+            height: 180px;
+            /* Fixed height forces uniformity */
             position: relative;
             background: #f1f5f9;
-            overflow: hidden; /* Cuts off anything spilling out */
+            overflow: hidden;
+            /* Cuts off anything spilling out */
         }
-        
+
         .card-img-box img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures image fills box without stretching */
+            object-fit: cover;
+            /* Ensures image fills box without stretching */
             object-position: center;
             transition: transform 0.5s ease;
         }
-        
+
         .card:hover .card-img-box img {
-            transform: scale(1.05); /* Subtle zoom effect */
+            transform: scale(1.05);
+            /* Subtle zoom effect */
         }
 
         .category-tag {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             color: white;
             font-size: 10px;
             font-weight: 700;
@@ -224,7 +285,10 @@
             gap: 8px;
             margin-bottom: 20px;
         }
-        .card-head i { color: var(--accent); }
+
+        .card-head i {
+            color: var(--accent);
+        }
 
         .card-footer {
             margin-top: auto;
@@ -243,9 +307,11 @@
             align-items: center;
             gap: 5px;
         }
+
         .status::before {
             content: '';
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             background: #10b981;
             border-radius: 50%;
         }
@@ -260,10 +326,14 @@
             font-weight: 600;
             transition: 0.2s;
         }
-        .btn-view:hover { background: var(--primary); color: white; }
 
+        .btn-view:hover {
+            background: var(--primary);
+            color: white;
+        }
     </style>
 </head>
+
 <body>
 
     <nav class="navbar">
@@ -273,7 +343,7 @@
                 ADITYA <span>UNIVERSITY</span>
             </div>
             <div class="nav-links">
-               <a href="/home">Home</a>
+                <a href="/home">Home</a>
                 <a href="#">Reports</a>
                 <a href="/logout" class="btn-logout">Logout <i class="fa-solid fa-right-from-bracket"></i></a>
             </div>
@@ -286,43 +356,46 @@
     </section>
 
     <div class="container">
-        
+
         <aside class="sidebar">
             <div class="profile-card">
                 <div class="avatar"></div>
                 <h3 style="font-weight: 700; font-size: 18px;">Dr. Dannina Kishore</h3>
                 <p style="color: #64748b; font-size: 14px;">Dean, Student Affairs</p>
-                
-             <div class="menu-list">
-    <a href="/home" class="menu-item active"><i class="fa-solid fa-border-all"></i> All Clubs</a>
-    <a href="/reports" class="menu-item"><i class="fa-solid fa-chart-line"></i> Annual Reports</a>
-    <a href="#" class="menu-item"><i class="fa-solid fa-calendar-days"></i> Event Calendar</a>
-    <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
-</div>
+
+                <div class="menu-list">
+                    <a href="/home" class="menu-item active"><i class="fa-solid fa-border-all"></i> All Clubs</a>
+                    <a href="/reports" class="menu-item"><i class="fa-solid fa-chart-line"></i> Annual Reports</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-calendar-days"></i> Event Calendar</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
+                </div>
             </div>
         </aside>
 
         <main class="content">
-            <div class="header-row">
+            <div class="header-row" onclick="toggleSection('clubs-grid', 'clubs-icon')" style="cursor: pointer;">
                 <h2>Registered Student Clubs (2025-26)</h2>
-                <span class="badge">Total: 20 Clubs</span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="badge">Total: 20 Clubs</span>
+                    <i id="clubs-icon" class="fa-solid fa-chevron-down" style="transition: transform 0.3s;"></i>
+                </div>
             </div>
 
-            <div class="grid-system">
+            <div class="grid-system" id="clubs-grid" style="display: none;">
                 {% for id, club in clubs.items() %}
                 <div class="card">
                     <div class="card-img-box">
                         <img src="/images/{{ club.img }}" alt="{{ club.name }}">
                         <span class="category-tag">{{ club.category }}</span>
                     </div>
-                    
+
                     <div class="card-body">
                         <div class="card-title">{{ club.name }}</div>
                         <div class="card-head">
                             <i class="fa-solid fa-user-tie"></i>
                             <span>{{ club.head }}</span>
                         </div>
-                        
+
                         <div class="card-footer">
                             <span class="status">Active</span>
                             <a href="/club/{{ id }}" class="btn-view">
@@ -333,9 +406,61 @@
                 </div>
                 {% endfor %}
             </div>
+
+            <!-- --- NEW: Extension Activities Section --- -->
+            <div class="header-row" onclick="toggleSection('extension-grid', 'extension-icon')"
+                style="margin-top: 50px; cursor: pointer;">
+                <h2>Extension Activities</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="badge">Total: 3 Activities</span>
+                    <i id="extension-icon" class="fa-solid fa-chevron-down" style="transition: transform 0.3s;"></i>
+                </div>
+            </div>
+
+            <div class="grid-system" id="extension-grid" style="display: none;">
+                {% for id, activity in extension_activities.items() %}
+                <div class="card">
+                    <div class="card-img-box">
+                        <img src="/images/{{ activity.img }}" alt="{{ activity.name }}">
+                        <span class="category-tag">{{ activity.category }}</span>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="card-title">{{ activity.name }}</div>
+                        <div class="card-head">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>{{ activity.head }}</span>
+                        </div>
+
+                        <div class="card-footer">
+                            <span class="status">Active</span>
+                            <a href="#" class="btn-view">
+                                View Details <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </main>
 
     </div>
 
+    <script>
+        function toggleSection(gridId, iconId) {
+            const grid = document.getElementById(gridId);
+            const icon = document.getElementById(iconId);
+
+            if (grid.style.display === "none") {
+                grid.style.display = "grid";
+                icon.style.transform = "rotate(180deg)";
+            } else {
+                grid.style.display = "none";
+                icon.style.transform = "rotate(0deg)";
+            }
+        }
+    </script>
+
 </body>
+
 </html>

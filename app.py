@@ -49,6 +49,13 @@ CLUBS_DATA = {
     "20": {"id": "20", "name": "Rx Wellness Club", "head": "Mrs. T. Gowthami", "category": "Health", "img": "club-20.png", "username": "gowthami", "password": "gowthami_rwc"}
 }
 
+# --- EXTENSION ACTIVITIES DATA ---
+EXTENSION_ACTIVITIES = {
+    "NSS": {"id": "NSS", "name": "National Service Scheme (NSS)", "head": "Mr. NSS Coordinator", "category": "Service", "img": "logo.png"},
+    "NCC": {"id": "NCC", "name": "National Cadet Corps (NCC)", "head": "Mr. NCC Coordinator", "category": "Service", "img": "logo.png"},
+    "SPORTS": {"id": "SPORTS", "name": "Sports & Games", "head": "Mr. Sports Coordinator", "category": "Sports", "img": "logo.png"}
+}
+
 # --- 3. PAGE ROUTING LOGIC ---
 
 @app.route('/')
@@ -63,7 +70,7 @@ def login_page():
 def dean_dashboard():
     if session.get('user_role') != 'dean':
         return redirect(url_for('login_page'))
-    return render_template('frontend.html', clubs=CLUBS_DATA)
+    return render_template('frontend.html', clubs=CLUBS_DATA, extension_activities=EXTENSION_ACTIVITIES)
 
 # --- NEW: Annual Reports Route ---
 @app.route('/reports')
@@ -222,7 +229,12 @@ def get_annual_stats():
     }
 
     # Fetch all file metadata
-    all_files = list(uploads_meta.find({}))
+    query = {}
+    selected_event = request.args.get('event_name')
+    if selected_event and selected_event != 'All Events':
+        query['event_name'] = selected_event
+
+    all_files = list(uploads_meta.find(query))
     
     # Helper to find column by keywords
     def find_col(columns, keywords):
@@ -271,7 +283,10 @@ def get_annual_stats():
                 k_clean = str(k).strip()
                 if k_clean: stats['years'][k_clean] = stats['years'].get(k_clean, 0) + v
 
-    return jsonify(stats)
+    # Get list of all unique event names for the dropdown
+    all_events = list(uploads_meta.distinct('event_name'))
+    
+    return jsonify({"stats": stats, "all_events": all_events})
 
 @app.route('/images/<path:filename>')
 def serve_images(filename):
