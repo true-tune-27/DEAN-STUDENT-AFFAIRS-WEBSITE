@@ -273,15 +273,32 @@ def get_annual_stats():
         if dept_col:
             dept_counts = df[dept_col].value_counts().to_dict()
             for k, v in dept_counts.items():
-                k_clean = str(k).strip()
+                # Clean and Group Departments (e.g., ECE-A -> ECE)
+                k_clean = str(k).strip().upper()
+                if '-' in k_clean:
+                    k_clean = k_clean.split('-')[0].strip()
+                
                 if k_clean: stats['departments'][k_clean] = stats['departments'].get(k_clean, 0) + v
 
         # 4. Years vs Participants
         if year_col:
             year_counts = df[year_col].value_counts().to_dict()
             for k, v in year_counts.items():
-                k_clean = str(k).strip()
-                if k_clean: stats['years'][k_clean] = stats['years'].get(k_clean, 0) + v
+                k_clean = str(k).strip().lower()
+                
+                # Normalization Logic
+                if k_clean in ['1', '1st', 'I', 'year 1', '1st year']:
+                    k_final = "1st Year"
+                elif k_clean in ['2', '2nd', 'II', 'year 2', '2nd year']:
+                    k_final = "2nd Year"
+                elif k_clean in ['3', '3rd', 'III', 'year 3', '3rd year']:
+                    k_final = "3rd Year"
+                elif k_clean in ['4', '4th', 'IV', 'year 4', '4th year']:
+                    k_final = "4th Year"
+                else:
+                    k_final = str(k).strip() # Fallback for unknown formats
+
+                if k_final: stats['years'][k_final] = stats['years'].get(k_final, 0) + v
 
     # Get list of all unique event names for the dropdown
     all_events = list(uploads_meta.distinct('event_name'))

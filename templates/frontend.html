@@ -364,7 +364,10 @@
                 <p style="color: #64748b; font-size: 14px;">Dean, Student Affairs</p>
 
                 <div class="menu-list">
-                    <a href="/home" class="menu-item active"><i class="fa-solid fa-border-all"></i> All Clubs</a>
+                    <a href="#" onclick="showSection('clubs')" class="menu-item active" id="menu-clubs"><i
+                            class="fa-solid fa-border-all"></i> All Clubs</a>
+                    <a href="#" onclick="showSection('extension')" class="menu-item" id="menu-extension"><i
+                            class="fa-solid fa-hand-holding-heart"></i> Extension Activities</a>
                     <a href="/reports" class="menu-item"><i class="fa-solid fa-chart-line"></i> Annual Reports</a>
                     <a href="#" class="menu-item"><i class="fa-solid fa-calendar-days"></i> Event Calendar</a>
                     <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
@@ -373,91 +376,94 @@
         </aside>
 
         <main class="content">
-            <div class="header-row" onclick="toggleSection('clubs-grid', 'clubs-icon')" style="cursor: pointer;">
-                <h2>Registered Student Clubs (2025-26)</h2>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="badge">Total: 20 Clubs</span>
-                    <i id="clubs-icon" class="fa-solid fa-chevron-down" style="transition: transform 0.3s;"></i>
-                </div>
-            </div>
-
-            <div class="grid-system" id="clubs-grid" style="display: none;">
-                {% for id, club in clubs.items() %}
-                <div class="card">
-                    <div class="card-img-box">
-                        <img src="/images/{{ club.img }}" alt="{{ club.name }}">
-                        <span class="category-tag">{{ club.category }}</span>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="card-title">{{ club.name }}</div>
-                        <div class="card-head">
-                            <i class="fa-solid fa-user-tie"></i>
-                            <span>{{ club.head }}</span>
-                        </div>
-
-                        <div class="card-footer">
-                            <span class="status">Active</span>
-                            <a href="/club/{{ id }}" class="btn-view">
-                                View Dashboard <i class="fa-solid fa-arrow-right ml-1"></i>
-                            </a>
-                        </div>
+            <div id="section-clubs">
+                <div class="header-row">
+                    <h2>Registered Student Clubs (2025-26)</h2>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="badge">Total: 20 Clubs</span>
                     </div>
                 </div>
-                {% endfor %}
+
+                <div class="grid-system" id="clubs-grid">
+                    {% for id, club in clubs.items() %}
+                    <div class="card">
+                        <div class="card-img-box">
+                            <img src="/images/{{ club.img }}" alt="{{ club.name }}">
+                            <span class="category-tag">{{ club.category }}</span>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="card-title">{{ club.name }}</div>
+                            <div class="card-head">
+                                <i class="fa-solid fa-user-tie"></i>
+                                <span>{{ club.head }}</span>
+                            </div>
+
+                            <div class="card-footer">
+                                <span class="status">Active</span>
+                                <a href="/club/{{ id }}" class="btn-view">
+                                    View Dashboard <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
             </div>
 
             <!-- --- NEW: Extension Activities Section --- -->
-            <div class="header-row" onclick="toggleSection('extension-grid', 'extension-icon')"
-                style="margin-top: 50px; cursor: pointer;">
-                <h2>Extension Activities</h2>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="badge">Total: 3 Activities</span>
-                    <i id="extension-icon" class="fa-solid fa-chevron-down" style="transition: transform 0.3s;"></i>
-                </div>
-            </div>
-
-            <div class="grid-system" id="extension-grid" style="display: none;">
-                {% for id, activity in extension_activities.items() %}
-                <div class="card">
-                    <div class="card-img-box">
-                        <img src="/images/{{ activity.img }}" alt="{{ activity.name }}">
-                        <span class="category-tag">{{ activity.category }}</span>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="card-title">{{ activity.name }}</div>
-                        <div class="card-head">
-                            <i class="fa-solid fa-user-tie"></i>
-                            <span>{{ activity.head }}</span>
-                        </div>
-
-                        <div class="card-footer">
-                            <span class="status">Active</span>
-                            <a href="#" class="btn-view">
-                                View Details <i class="fa-solid fa-arrow-right ml-1"></i>
-                            </a>
-                        </div>
+            <div id="section-extension" style="display: none;">
+                <div class="header-row" style="margin-top: 50px;">
+                    <h2>Extension Activities</h2>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="badge">Total: 3 Activities</span>
                     </div>
                 </div>
-                {% endfor %}
+
+                <div class="grid-system" id="extension-grid">
+                    {% for id, activity in extension_activities.items() %}
+                    <div class="card">
+                        <div class="card-img-box">
+                            <img src="/images/{{ activity.img }}" alt="{{ activity.name }}">
+                            <span class="category-tag">{{ activity.category }}</span>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="card-title">{{ activity.name }}</div>
+                            <div class="card-head">
+                                <i class="fa-solid fa-user-tie"></i>
+                                <span>{{ activity.head }}</span>
+                            </div>
+
+                            <div class="card-footer">
+                                <span class="status">Active</span>
+                                <a href="#" class="btn-view">
+                                    View Details <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </main>
 
     </div>
 
     <script>
-        function toggleSection(gridId, iconId) {
-            const grid = document.getElementById(gridId);
-            const icon = document.getElementById(iconId);
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('section-clubs').style.display = 'none';
+            document.getElementById('section-extension').style.display = 'none';
 
-            if (grid.style.display === "none") {
-                grid.style.display = "grid";
-                icon.style.transform = "rotate(180deg)";
-            } else {
-                grid.style.display = "none";
-                icon.style.transform = "rotate(0deg)";
-            }
+            // Remove active class from menu
+            document.getElementById('menu-clubs').classList.remove('active');
+            document.getElementById('menu-extension').classList.remove('active');
+
+            // Show selected section
+            document.getElementById('section-' + sectionId).style.display = 'block';
+            document.getElementById('menu-' + sectionId).classList.add('active');
         }
     </script>
 
